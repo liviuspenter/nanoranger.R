@@ -11,5 +11,5 @@ fusion genes and CAR sequences from amplicons sequenced with long-read sequencin
 ## Implemented functions
 
 extract_mutation(): extraction of single nucleotide variants<br>
-extract_indel(): extraction of insertions or deletions with specific length
+extract_indel(): extraction of insertions or deletions with specific length<br>
 extract_length_diff(): detect truncated transcripts 
