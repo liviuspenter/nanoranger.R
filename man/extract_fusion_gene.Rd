@@ -24,7 +24,7 @@ extract_fusion_gene(
 \item{FILTER}{minimum number of reads per cell barcode}
 }
 \value{
-dataframe with cell barcodes and information on full length (wildtype) or truncated transcript (mutated)
+dataframe with cell barcodes and information on wildtype or fusion (mutated)
 }
 \description{
 extract fusion genes or CAR sequences

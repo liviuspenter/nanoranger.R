@@ -215,3 +215,55 @@ extract_fusion_gene = function(BC.data.file, WILDTYPE, FUSION, downsample=NA, fi
 
   results
 }
+
+
+#' extract reads covering exon
+#'
+#' @param BC.data.file output of fusion_gene.py
+#' @param GENE gene
+#' @param EXON exon
+#' @param downsample maximum number of reads to process
+#' @param FILTER minimum number of reads per cell barcode
+#' @returns dataframe with cell barcodes and information on exon expression
+#
+extract_isoforms = function(BC.data.file, GENE, EXON, downsample=NA, filter = 4) {
+  BC.data = data.table::fread(BC.data.file) %>% filter(gene == GENE & exon == EXON)
+  if(!is.na(downsample)) {
+    BC.data = BC.data[sample(seq(1,nrow(BC.data)), size = downsample),]
+  }
+
+  BC.list = BC.data %>% group_by(bc, umi) %>% summarize(n = n()) %>% filter (n > filter)
+
+  # run starcode and identify UMI clusters
+  UMIs.collapsed = data.frame()
+  for (bc in unique(BC.list$bc)) {
+    filehandle.in = tempfile()
+    filehandle.out = tempfile()
+    write.table(x=BC.list[which(BC.list$bc == bc), c('umi', 'n')], file = filehandle.in, sep = '\t', row.names = F, quote = F, col.names = F)
+
+    system(paste0(STARCODE, ' -d 3 -i ', filehandle.in, ' -o ', filehandle.out, ' --print-clusters'))
+    starcode.output = as.data.frame(read.csv2(filehandle.out, sep = '\t', header = F))
+    colnames(starcode.output) = c('umi', 'n', 'umi.non.collapsed')
+    starcode.output$bc = bc
+
+    UMIs.collapsed = rbind(UMIs.collapsed, starcode.output)
+
+    unlink(filehandle.in)
+    unlink(filehandle.out)
+  }
+
+  BC.data.condensed = BC.data %>% group_by(bc, umi) %>% summarize(overlap = mean(overlap), length = mean(length))
+  BC.data.condensed$bc.umi = paste0(BC.data.condensed$bc, '.', BC.data.condensed$umi)
+  UMIs.collapsed$bc.umi = paste0(UMIs.collapsed$bc, '.', UMIs.collapsed$umi)
+  rownames(UMIs.collapsed) = UMIs.collapsed$bc.umi
+
+  BC.data.condensed = BC.data.condensed[which(BC.data.condensed$bc.umi %in% UMIs.collapsed$bc.umi),]
+  BC.data.condensed$count = UMIs.collapsed[BC.data.condensed$bc.umi, 'n']
+  BC.data.condensed$detected = ifelse(BC.data.condensed$overlap > 0.8*BC.data.condensed$length, 'detected', 'not.detected')
+
+  results = BC.data.condensed %>% group_by(bc, detected) %>% tally() %>% group_by(bc) %>% tidyr::pivot_wider(names_from = 'detected', values_from = 'n')
+  results[is.na(results)] = 0
+  results = as.data.frame(results)
+
+  results
+}
