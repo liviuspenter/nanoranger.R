@@ -13,4 +13,4 @@ fusion genes and CAR sequences from amplicons sequenced with long-read sequencin
 extract_mutation(): extraction of single nucleotide variants<br>
 extract_indel(): extraction of insertions or deletions with specific length<br>
 extract_length_diff(): detect truncated transcripts <br>
-extract_fusion_gene9): extraction of fusion genes or CAR sequences
+extract_fusion_gene(): extraction of fusion genes or CAR sequences
