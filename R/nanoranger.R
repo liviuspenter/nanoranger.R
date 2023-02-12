@@ -157,3 +157,61 @@ extract_length_diff = function(BC.data.file, POS, downsample = NA, FILTER = 4) {
   results$vaf = results$alt / (results$alt + results$ref)
   results
 }
+
+
+#' extract fusion genes or CAR sequences
+#'
+#' @param BC.data.file output of fusion_gene.py
+#' @param WILDTYPE wildtype gene
+#' @param FUSION fusion partner
+#' @param downsample maximum number of reads to process
+#' @param FILTER minimum number of reads per cell barcode
+#' @returns dataframe with cell barcodes and information on wildtype or fusion (mutated)
+#
+extract_fusion_gene = function(BC.data.file, WILDTYPE, FUSION, downsample=NA, filter = 4) {
+  BC.data = data.table::fread(BC.data.file)
+  if(!is.na(downsample)) {
+    BC.data = BC.data[sample(seq(1,nrow(BC.data)), size = downsample),]
+  }
+
+  BC.list = BC.data %>% group_by(bc, umi, gene) %>% summarize(n = n()) %>% filter (n > filter)
+
+  # run starcode and identify UMI clusters
+  UMIs.collapsed = data.frame()
+  for (bc in unique(BC.list$bc)) {
+    message(bc)
+    filehandle.in = tempfile()
+    filehandle.out = tempfile()
+    write.table(x=BC.list[which(BC.list$bc == bc), c('umi', 'n')], file = filehandle.in, sep = '\t', row.names = F, quote = F, col.names = F)
+
+    system(paste0(STARCODE, ' -d 3 -i ', filehandle.in, ' -o ', filehandle.out, ' --print-clusters'))
+    starcode.output = as.data.frame(read.csv2(filehandle.out, sep = '\t', header = F))
+    colnames(starcode.output) = c('umi', 'n', 'umi.non.collapsed')
+    starcode.output$bc = bc
+
+    UMIs.collapsed = rbind(UMIs.collapsed, starcode.output)
+
+    unlink(filehandle.in)
+    unlink(filehandle.out)
+  }
+
+  BC.data.condensed = BC.data %>% group_by(gene, bc, umi) %>% tally()
+  BC.data.condensed$bc.umi = paste0(BC.data.condensed$bc, '.', BC.data.condensed$umi)
+  UMIs.collapsed$bc.umi = paste0(UMIs.collapsed$bc, '.', UMIs.collapsed$umi)
+  rownames(UMIs.collapsed) = UMIs.collapsed$bc.umi
+
+  BC.data.condensed = BC.data.condensed[which(BC.data.condensed$bc.umi %in% UMIs.collapsed$bc.umi),]
+  BC.data.condensed$count = UMIs.collapsed[BC.data.condensed$bc.umi, 'n']
+
+  results = BC.data.condensed %>% group_by(gene, bc) %>% tally() %>% group_by(bc) %>% tidyr::pivot_wider(names_from = 'gene', values_from = 'n')
+  results[is.na(results)] = 0
+  results$vaf = results[,FUSION] / (results[,FUSION] + results[,WILDTYPE])
+  results$mutated = ifelse(results$vaf > 0, 'mutated', 'wildtype')
+  results = as.data.frame(results)
+  colnames(results)[4:5] = c('vaf', 'mutated')
+
+  results$vaf = as.numeric(results$vaf[,1])
+  results$mutated = as.character(results$mutated[,1])
+
+  results
+}
