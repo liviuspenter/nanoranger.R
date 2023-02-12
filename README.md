@@ -7,3 +7,9 @@ fusion genes and CAR sequences from amplicons sequenced with long-read sequencin
 ---
 
 ![PCR scheme](man/20230212_PCR_scheme.png)
+
+## Implemented functions
+
+extract_mutation(): extraction of single nucleotide variants<br>
+extract_indel(): extraction of insertions or deletions with specific length
+
