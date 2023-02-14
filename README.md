@@ -4,6 +4,8 @@ R package for down-stream processing of [nanoranger](https://github.com/mehdibor
 The package provides capabilities to read out single nucleotide variants, insertions/deletions,
 fusion genes/CAR sequences and isoforms from amplicons sequenced with long-read sequencing with the *nanoranger* protocol. 
 
+For vignettes see [here](vignettes/README.md)
+
 ---
 
 ![PCR scheme](man/20230212_PCR_scheme.png)
