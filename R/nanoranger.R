@@ -271,7 +271,12 @@ extract_isoforms = function(BC.data.file, GENE, EXON, downsample=NA, filter = 4)
 #' plot knee plot
 #' @param x pileup data
 #' @param cutoff draw cut off at indicated number of reads
-knee_plot = function(x, cutoff = NA) {
+#' @param downsample downsample to indicated number of reads
+knee_plot = function(x, cutoff = NA, downsample = NA) {
+  if (!is.na(downsample)) {
+    x = x[sample(nrow(x), downsample),]
+  }
+
   boo = x %>% group_by(bc) %>% summarize(umis = length(umi))
 
   boo = boo[order(boo$umis, decreasing = T),]
