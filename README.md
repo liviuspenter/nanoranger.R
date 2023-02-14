@@ -10,6 +10,7 @@ fusion genes/CAR sequences and isoforms from amplicons sequenced with long-read 
 
 ## Implemented functions
 
+knee_plot(): plot knee plot to identify optimal cutoff for cells<br>
 extract_mutation(): extraction of single nucleotide variants<br>
 extract_indel(): extraction of insertions or deletions with specific length<br>
 extract_length_diff(): detect truncated transcripts <br>
