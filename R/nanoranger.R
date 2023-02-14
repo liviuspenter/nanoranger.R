@@ -268,3 +268,25 @@ extract_isoforms = function(BC.data.file, GENE, EXON, downsample=NA, filter = 4)
   results
 }
 
+#' plot knee plot
+#' @param x pileup data
+#' @param cutoff draw cut off at indicated number of reads
+knee_plot = function(x, cutoff = NA) {
+  boo = x %>% group_by(bc) %>% summarize(umis = length(umi))
+
+  boo = boo[order(boo$umis, decreasing = T),]
+  boo$rank = seq(1, nrow(boo))
+  p = ggplot(boo, aes(x=rank, y=umis)) + geom_line() +
+    scale_x_log10('Rank', limits = c(1,50000)) +
+    scale_y_log10('Reads', limits = c(1,50000)) +
+    theme_classic() +
+    theme(axis.title = element_text('Arial', size=8, color='black'),
+          axis.text = element_text('Arial', size=8, color='black'),
+          axis.ticks = element_line(color='black'))
+
+  if (!is.na(cutoff)) {
+    p = p + geom_hline(yintercept = cutoff, color='red')
+  }
+
+  p
+}
