@@ -267,3 +267,4 @@ extract_isoforms = function(BC.data.file, GENE, EXON, downsample=NA, filter = 4)
 
   results
 }
+
