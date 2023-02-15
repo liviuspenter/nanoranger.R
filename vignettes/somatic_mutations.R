@@ -1,4 +1,4 @@
-# example to read out somatic mutations
+# examples to read out somatic mutations including insertions/deletions
 
 library(ggplot2)
 
