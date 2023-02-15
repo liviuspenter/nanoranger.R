@@ -49,3 +49,10 @@ Thus, the 3' (`WILDTYPE = ...`) and 5' (`FUSION = ...`) partners need to be indi
 `CAR.ONT = extract_fusion_gene('./vignettes/data/97_6_CART_CD28.csv.gz', WILDTYPE = 'CD28', FUSION = 'CARTmod')`
 
 This works in the same way with fusions like *BCR::ABL1*, where the parameters would be `WILDTYPE = 'ABL1'` and `FUSION = 'BCR'`
+
+## isoforms
+
+For identifying differential expression of exons within genes, the nanoranger script `isoforms.py` is used. 
+This will provide a list of reads mapping to the gene of interest alongside information with how many nucleotides 
+each read overlaps with the exon in question. If the overlap of a particular read with the exon is <50%, it will be 
+considered non-expressed. 
