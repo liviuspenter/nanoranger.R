@@ -55,4 +55,14 @@ This works in the same way with fusions like *BCR::ABL1*, where the parameters w
 For identifying differential expression of exons within genes, the nanoranger script `isoforms.py` is used. 
 This will provide a list of reads mapping to the gene of interest alongside information with how many nucleotides 
 each read overlaps with the exon in question. If the overlap of a particular read with the exon is <50%, it will be 
-considered non-expressed. 
+considered non-expressed. For example, in the gene *PTPRC*, exon4 is relevant for identifying CD45RA versus CD45RO.
+
+<img src="20230215_PTPRC.png" width=30%>
+
+Again, we need to look at the coverage first to identify a cut-off. 
+
+<img src="1007_PTPRC_exon4_kneeplot.png"  width="250" height="200">
+
+And then we are able to identify cells expressing both isoforms.
+
+`PTPRC.1 = extract_isoforms('./vignettes/data/1007_1_exons.csv.gz', GENE = 'PTPRC', EXON = 'exon4', filter = 10)`
