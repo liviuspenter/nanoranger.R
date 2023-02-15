@@ -33,3 +33,12 @@ Using `CONSENSUS = ...` we define how many bases are deleted or inserted at the 
 <img src="1007_STAG2_kneeplot.png"  width="250" height="200">
 
 `extract_indel(BC.data.file = './vignettes/data/1007_pileup_STAG2.csv.gz', REF = 'C', CONSENSUS = -2, FILTER = 20)`
+
+## fusion genes
+
+For the identification of cells expressing fusion versus wildtype genes, reads are aligned against both fusion partners with
+the nanoranger script fusion_gene.py. The output is then processed with `extract_fusion_gene()`. 
+
+The approach assumes that as the locus-specific primer targets the
+fusion partner at the 3' end, reads aligning against the fusion partner at the 5' end derive from fusion events. 
+
