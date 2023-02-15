@@ -42,3 +42,10 @@ the nanoranger script fusion_gene.py. The output is then processed with `extract
 The approach assumes that as the locus-specific primer targets the
 fusion partner at the 3' end, reads aligning against the fusion partner at the 5' end derive from fusion events. 
 
+<img src="20230215_CAR.png" width=30%>
+
+Thus, the 3' (`WILDTYPE = ...`) and 5' (`FUSION = ...`) partners need to be indicated when identifying cells expressing the fusion like so:
+
+`CAR.ONT = extract_fusion_gene('./vignettes/data/97_6_CART_CD28.csv.gz', WILDTYPE = 'CD28', FUSION = 'CARTmod')`
+
+This works in the same way with fusions like *BCR::ABL1*, where the parameters would be `WILDTYPE = 'ABL1'` and `FUSION = 'BCR'`
