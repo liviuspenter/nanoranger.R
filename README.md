@@ -22,3 +22,9 @@ extract_indel(): extraction of insertions or deletions with specific length<br>
 extract_length_diff(): detect truncated transcripts <br>
 extract_fusion_gene(): extraction of fusion genes or CAR sequences<br>
 extract_isoforms(): extraction of differentially spliced exons
+
+## Installation
+
+``` r
+devtools::install_github('liviuspenter/nanoranger.R')
+```
